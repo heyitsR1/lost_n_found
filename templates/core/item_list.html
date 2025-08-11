@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Items - King's Lost N Found{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-4 fade-in">
+        <div class="col-lg-8">
+            <h1 class="fw-bold mb-3">Browse Items</h1>
+            <p class="text-muted">Find lost items or check if your found item has been reported</p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            {% if user.is_authenticated %}
+                <a href="{% url 'core:item_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Post New Item
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4 fade-in">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Search items..." value="{{ filters.search }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="lost" {% if filters.type == 'lost' %}selected{% endif %}>Lost</option>
+                        <option value="found" {% if filters.type == 'found' %}selected{% endif %}>Found</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if filters.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Active</option>
+                        <option value="claimed" {% if filters.status == 'claimed' %}selected{% endif %}>Claimed</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+        <p class="text-muted mb-0">
+            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} items
+        </p>
+        <div class="btn-group" role="group">
+            <a href="{% url 'core:item_list' %}" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
+        </div>
+    </div>
+
+    <!-- Items Grid -->
+    {% if page_obj %}
+        <div class="row g-4">
+            {% for item in page_obj %}
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="card h-100 tilt-card">
+                        {% if item.images.first %}
+                            <img src="{{ item.images.first.image.url }}" class="card-img-top" alt="{{ item.title }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-image text-muted fa-3x"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge {% if item.item_type == 'lost' %}bg-danger{% else %}bg-success{% endif %}">
+                                    {{ item.get_item_type_display }}
+                                </span>
+                                {% if item.is_urgent %}
+                                    <span class="badge bg-warning pulse">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Urgent
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <h5 class="card-title">{{ item.title }}</h5>
+                            <p class="card-text text-muted small">{{ item.description|truncatewords:20 }}</p>
+                            
+                            <div class="row text-muted small mb-3">
+                                <div class="col-6">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ item.location }}
+                                </div>
+                                <div class="col-6 text-end">
+                                    <i class="fas fa-clock me-1"></i>{{ item.created_at|timesince }} ago
+                                </div>
+                            </div>
+                            
+                            {% if item.reward %}
+                                <div class="mb-2">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-dollar-sign me-1"></i>Reward: ${{ item.reward }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-sm btn-outline-primary">
+                                    View Details
+                                </a>
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i>{{ item.user.get_full_name|default:item.user.username }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-5 fade-in">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}{% if filters.category %}&category={{ filters.category }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}{% if filters.category %}&category={{ filters.category }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}{% if filters.category %}&category={{ filters.category }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}{% if filters.category %}&category={{ filters.category }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}{% if filters.category %}&category={{ filters.category }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5 fade-in">
+            <i class="fas fa-search text-muted fa-4x mb-4 animated-icon"></i>
+            <h4 class="text-muted">No items found</h4>
+            <p class="text-muted">Try adjusting your search criteria or browse all items.</p>
+            <a href="{% url 'core:item_list' %}" class="btn btn-primary">View All Items</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

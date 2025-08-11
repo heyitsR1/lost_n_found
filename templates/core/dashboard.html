@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - King's Lost N Found{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h1 class="fw-bold mb-2">My Dashboard</h1>
+            <p class="text-muted">Manage your lost and found items</p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            <a href="{% url 'core:item_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Post New Item
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-list text-primary fa-2x mb-3"></i>
+                    <h3 class="fw-bold">{{ active_items.count }}</h3>
+                    <p class="text-muted mb-0">Active Items</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-check-circle text-success fa-2x mb-3"></i>
+                    <h3 class="fw-bold">{{ claimed_items.count }}</h3>
+                    <p class="text-muted mb-0">Claimed Items</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-clock text-warning fa-2x mb-3"></i>
+                    <h3 class="fw-bold">{{ expired_items.count }}</h3>
+                    <p class="text-muted mb-0">Expired Items</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Items -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>My Items
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if user_items %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                                <th>Posted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in user_items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.images.first %}
+                                                <img src="{{ item.images.first.image.url }}" class="rounded me-3" alt="{{ item.title }}" style="width: 50px; height: 50px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ item.title }}</h6>
+                                                <small class="text-muted">{{ item.category.name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if item.item_type == 'lost' %}bg-danger{% else %}bg-success{% endif %}">
+                                            {{ item.get_item_type_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if item.status == 'active' %}bg-primary{% elif item.status == 'claimed' %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ item.get_status_display }}
+                                        </span>
+                                        {% if item.is_urgent %}
+                                            <span class="badge bg-warning ms-1">Urgent</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.location }}</td>
+                                    <td>{{ item.created_at|date:"M j, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'core:item_update' item.pk %}" class="btn btn-outline-secondary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'core:item_delete' item.pk %}" class="btn btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox text-muted fa-4x mb-4"></i>
+                    <h4 class="text-muted">No items posted yet</h4>
+                    <p class="text-muted">Start by posting your first lost or found item!</p>
+                    <a href="{% url 'core:item_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Post Your First Item
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>Report Lost Item
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Lost something important? Report it quickly to increase your chances of finding it.</p>
+                    <a href="{% url 'core:item_create' %}?type=lost" class="btn btn-danger">
+                        <i class="fas fa-plus me-2"></i>Report Lost Item
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-hand-holding-heart text-success me-2"></i>Report Found Item
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Found something that doesn't belong to you? Help return it to its rightful owner.</p>
+                    <a href="{% url 'core:item_create' %}?type=found" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Report Found Item
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips Section -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="fas fa-lightbulb text-warning me-2"></i>Tips for Better Results
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Add clear photos</strong> - Multiple angles help with identification
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Be specific</strong> - Include brand names, colors, and unique features
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Update regularly</strong> - Keep your posts current
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Respond quickly</strong> - Check messages and inquiries promptly
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Mark as urgent</strong> - For valuable or time-sensitive items
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Provide contact info</strong> - Make it easy for people to reach you
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

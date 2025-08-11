@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - King's Lost N Found{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <video src="{% static 'media/video.mp4' %}" autoplay muted loop></video>
+        <div class="row align-items-center">
+            <div class="col-lg-6 fade-in">
+                <div class="text-white">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="fas fa-search-location me-3 animated-icon"></i>
+                        Lost N Found
+                    </h1>
+                    <p class="lead mb-4">
+                        I have... lost something or found something. Let's help each other find what's missing.
+                    </p>
+                    <div class="d-flex gap-3">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'core:item_create' %}" class="btn btn-light btn-lg">
+                                <i class="fas fa-plus me-2"></i>Post Item
+                            </a>
+                        {% else %}
+                            <a href="{% url 'account_signup' %}" class="btn btn-light btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </a>
+                            <a href="{% url 'account_login' %}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center fade-in">
+                <div class="position-relative">
+                    <div class="bg-white rounded-circle d-inline-block p-4 shadow-lg tilt-card">
+                        <i class="fas fa-search-location text-primary animated-icon" style="font-size: 4rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Action Cards Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    <!-- Lost Card -->
+                    <div class="col-md-6 fade-in">
+                        <div class="action-card lost-card text-white p-4 h-100 tilt-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
+                                    <i class="fas fa-exclamation-triangle fa-2x animated-icon"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0">Lost</h3>
+                                    <p class="mb-0 opacity-75">Something missing?</p>
+                                </div>
+                            </div>
+                            <p class="mb-4">Report your lost item and let our community help you find it.</p>
+                            <a href="{% url 'core:item_create' %}?type=lost" class="btn btn-light">
+                                <i class="fas fa-plus me-2"></i>Report Lost Item
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Found Card -->
+                    <div class="col-md-6 fade-in">
+                        <div class="action-card found-card text-white p-4 h-100 tilt-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
+                                    <i class="fas fa-hand-holding-heart fa-2x animated-icon"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0">Found</h3>
+                                    <p class="mb-0 opacity-75">Found something?</p>
+                                </div>
+                            </div>
+                            <p class="mb-4">Help return found items to their rightful owners.</p>
+                            <a href="{% url 'core:item_create' %}?type=found" class="btn btn-light">
+                                <i class="fas fa-plus me-2"></i>Report Found Item
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4 fade-in">
+                <div class="stats-card tilt-card">
+                    <div class="stats-number">{{ total_items }}</div>
+                    <div class="stats-label">Total Items</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 fade-in">
+                <div class="stats-card tilt-card">
+                    <div class="stats-number text-danger">{{ lost_items }}</div>
+                    <div class="stats-label">Lost Items</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 fade-in">
+                <div class="stats-card tilt-card">
+                    <div class="stats-number text-success">{{ found_items }}</div>
+                    <div class="stats-label">Found Items</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Items Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-4 fade-in">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-exclamation-triangle text-danger me-2 animated-icon"></i>
+                    Recent Lost Items
+                </h3>
+                {% if recent_lost %}
+                    <div class="row g-3">
+                        {% for item in recent_lost %}
+                            <div class="col-md-6">
+                                <div class="card h-100 tilt-card">
+                                    {% if item.images.first %}
+                                        <img src="{{ item.images.first.image.url }}" class="card-img-top" alt="{{ item.title }}" style="height: 150px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                            <i class="fas fa-image text-muted fa-2x"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ item.title }}</h6>
+                                        <p class="card-text small text-muted">{{ item.location }}</p>
+                                        <small class="text-muted">{{ item.created_at|timesince }} ago</small>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-sm btn-outline-primary">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox text-muted fa-3x mb-3"></i>
+                        <p class="text-muted">No lost items reported yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-lg-6 mb-4 fade-in">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-hand-holding-heart text-success me-2 animated-icon"></i>
+                    Recent Found Items
+                </h3>
+                {% if recent_found %}
+                    <div class="row g-3">
+                        {% for item in recent_found %}
+                            <div class="col-md-6">
+                                <div class="card h-100 tilt-card">
+                                    {% if item.images.first %}
+                                        <img src="{{ item.images.first.image.url }}" class="card-img-top" alt="{{ item.title }}" style="height: 150px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                            <i class="fas fa-image text-muted fa-2x"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ item.title }}</h6>
+                                        <p class="card-text small text-muted">{{ item.location }}</p>
+                                        <small class="text-muted">{{ item.created_at|timesince }} ago</small>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-sm btn-outline-success">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox text-muted fa-3x mb-3"></i>
+                        <p class="text-muted">No found items reported yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 fade-in">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Search for Items</h3>
+                    <p class="text-muted">Find lost items or check if your found item has been reported</p>
+                </div>
+                <div class="search-box p-4 tilt-card">
+                    <form method="get" action="{% url 'core:item_list' %}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" name="search" class="form-control" placeholder="Search items...">
+                            </div>
+                            <div class="col-md-3">
+                                <select name="type" class="form-select">
+                                    <option value="">All Types</option>
+                                    <option value="lost">Lost</option>
+                                    <option value="found">Found</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-2"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+{% if categories %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4 fade-in">
+            <h3 class="fw-bold">Browse by Category</h3>
+            <p class="text-muted">Find items by category</p>
+        </div>
+        <div class="row g-3">
+            {% for category in categories %}
+                <div class="col-md-3 col-sm-6 fade-in">
+                    <a href="{% url 'core:item_list' %}?category={{ category.id }}" class="text-decoration-none">
+                        <div class="card text-center h-100 tilt-card">
+                            <div class="card-body">
+                                <i class="fas fa-{{ category.icon|default:'tag' }} fa-2x mb-3 animated-icon" style="color: {{ category.color }};"></i>
+                                <h6 class="card-title">{{ category.name }}</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %} 

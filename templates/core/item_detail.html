@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ item.title }} - King's Lost N Found{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Item Header -->
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'core:item_list' %}">Items</a></li>
+                            <li class="breadcrumb-item active">{{ item.title }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="fw-bold mb-2">{{ item.title }}</h1>
+                    <div class="d-flex gap-2 mb-3">
+                        <span class="badge {% if item.item_type == 'lost' %}bg-danger{% else %}bg-success{% endif %} fs-6">
+                            {{ item.get_item_type_display }}
+                        </span>
+                        {% if item.is_urgent %}
+                            <span class="badge bg-warning fs-6">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Urgent
+                            </span>
+                        {% endif %}
+                        <span class="badge bg-secondary fs-6">{{ item.get_status_display }}</span>
+                    </div>
+                </div>
+                {% if user == item.user %}
+                    <div class="btn-group">
+                        <a href="{% url 'core:item_update' item.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </a>
+                        <a href="{% url 'core:item_delete' item.pk %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash me-1"></i>Delete
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Image Gallery -->
+            {% if item.images.all %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div id="itemCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                {% for image in item.images.all %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ item.title }}" style="height: 400px; object-fit: cover;">
+                                        {% if image.caption %}
+                                            <div class="carousel-caption d-none d-md-block">
+                                                <p>{{ image.caption }}</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if item.images.count > 1 %}
+                                <button class="carousel-control-prev" type="button" data-bs-target="#itemCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#itemCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Item Details -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Description</h5>
+                    <p class="card-text">{{ item.description|linebreaks }}</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-map-marker-alt text-primary me-2"></i>Location</h6>
+                            <p class="text-muted">{{ item.location }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-tag text-primary me-2"></i>Category</h6>
+                            <p class="text-muted">{{ item.category.name }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-clock text-primary me-2"></i>Posted</h6>
+                            <p class="text-muted">{{ item.created_at|date:"F j, Y" }} at {{ item.created_at|time:"g:i A" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-user text-primary me-2"></i>Posted by</h6>
+                            <p class="text-muted">{{ item.user.get_full_name|default:item.user.username }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if item.reward %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-dollar-sign text-warning me-2"></i>Reward</h6>
+                                <p class="text-muted">${{ item.reward }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            {% if item.contact_name or item.contact_email or item.contact_phone %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-address-card text-primary me-2"></i>Contact Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% if item.contact_name %}
+                                <div class="col-md-4">
+                                    <h6>Name</h6>
+                                    <p class="text-muted">{{ item.contact_name }}</p>
+                                </div>
+                            {% endif %}
+                            {% if item.contact_email %}
+                                <div class="col-md-4">
+                                    <h6>Email</h6>
+                                    <p class="text-muted">
+                                        <a href="mailto:{{ item.contact_email }}">{{ item.contact_email }}</a>
+                                    </p>
+                                </div>
+                            {% endif %}
+                            {% if item.contact_phone %}
+                                <div class="col-md-4">
+                                    <h6>Phone</h6>
+                                    <p class="text-muted">
+                                        <a href="tel:{{ item.contact_phone }}">{{ item.contact_phone }}</a>
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Contact Form -->
+            {% if user.is_authenticated and user != item.user %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-envelope text-primary me-2"></i>Contact Owner</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ contact_form.name.label_tag }}
+                                    {{ contact_form.name }}
+                                    {% if contact_form.name.errors %}
+                                        <div class="text-danger small">{{ contact_form.name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ contact_form.email.label_tag }}
+                                    {{ contact_form.email }}
+                                    {% if contact_form.email.errors %}
+                                        <div class="text-danger small">{{ contact_form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                {{ contact_form.phone.label_tag }}
+                                {{ contact_form.phone }}
+                                {% if contact_form.phone.errors %}
+                                    <div class="text-danger small">{{ contact_form.phone.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ contact_form.message.label_tag }}
+                                {{ contact_form.message }}
+                                {% if contact_form.message.errors %}
+                                    <div class="text-danger small">{{ contact_form.message.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% elif not user.is_authenticated %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="text-muted">Please <a href="{% url 'account_login' %}">sign in</a> to contact the owner.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Related Items -->
+            {% if related_items %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Related Items</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for related_item in related_items %}
+                            <div class="d-flex mb-3">
+                                {% if related_item.images.first %}
+                                    <img src="{{ related_item.images.first.image.url }}" class="rounded me-3" alt="{{ related_item.title }}" style="width: 60px; height: 60px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ related_item.title }}</h6>
+                                    <p class="text-muted small mb-1">{{ related_item.location }}</p>
+                                    <span class="badge {% if related_item.item_type == 'lost' %}bg-danger{% else %}bg-success{% endif %} small">
+                                        {{ related_item.get_item_type_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'core:item_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-search me-2"></i>Browse All Items
+                        </a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'core:item_create' %}" class="btn btn-outline-success">
+                                <i class="fas fa-plus me-2"></i>Post New Item
+                            </a>
+                        {% else %}
+                            <a href="{% url 'account_signup' %}" class="btn btn-outline-success">
+                                <i class="fas fa-user-plus me-2"></i>Join Our Community
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

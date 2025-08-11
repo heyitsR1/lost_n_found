@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Item - King's Lost N Found{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trash text-danger me-2"></i>Confirm Delete
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+                    <h4 class="fw-bold mb-3">Are you sure?</h4>
+                    <p class="text-muted mb-4">
+                        You are about to delete "<strong>{{ item.title }}</strong>". 
+                        This action cannot be undone.
+                    </p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Item Details:</h6>
+                            <ul class="list-unstyled text-muted">
+                                <li><strong>Type:</strong> {{ item.get_item_type_display }}</li>
+                                <li><strong>Category:</strong> {{ item.category.name }}</li>
+                                <li><strong>Location:</strong> {{ item.location }}</li>
+                                <li><strong>Posted:</strong> {{ item.created_at|date:"M j, Y" }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            {% if item.images.first %}
+                                <img src="{{ item.images.first.image.url }}" class="img-thumbnail" alt="{{ item.title }}" style="max-width: 150px;">
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Delete Item
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
