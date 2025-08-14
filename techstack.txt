@@ -1,0 +1,3 @@
+Django as the backend framework 
+HTML, TailwindCSS, JS for the frontend
+sql lite for the database (temporary)

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign Up" %}{% endblock %}
+
+{% block content %}
+<section class="py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-center">
+      <div class="w-full max-w-3xl">
+        <div class="bg-white rounded-lg shadow-xl overflow-hidden">
+          <div class="bg-primary text-white text-center py-6">
+            <h3 class="text-2xl font-bold">{% trans "Sign Up" %}</h3>
+          </div>
+          <div class="p-6 md:p-8">
+            
+            {% get_providers as socialaccount_providers %}
+            
+            {% if socialaccount_providers %}
+            <div class="mb-6">
+              <div class="text-center mb-4">
+                <p class="text-gray-500">{% trans "Sign up with your university account or social account" %}</p>
+              </div>
+              <div class="space-y-3">
+                {% include "socialaccount/snippets/provider_list.html" with process="signup" %}
+              </div>
+              <div class="text-center my-4">
+                <p class="text-gray-500">{% trans "Or register with email" %}</p>
+              </div>
+            </div>
+            {% endif %}
+            
+            <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+              {% csrf_token %}
+              
+              {% if form.errors %}
+              <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                <p class="text-red-700 font-medium">{% trans "Please correct the errors below:" %}</p>
+                <div class="text-red-600">{{ form.non_field_errors }}</div>
+              </div>
+              {% endif %}
+              
+              {% for field in form %}
+                {% if field.name != 'password1' and field.name != 'password2' %}
+                <div class="{% if forloop.counter|divisibleby:2 and field.name != 'email' and field.name != 'student_id' and field.name != 'graduation_year' %}mt-0{% else %}mt-6{% endif %}">
+                  <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}{% if not field.field.required %} <span class="text-gray-500">({% trans "Optional" %})</span>{% endif %}</label>
+                  <div class="relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="fas fa-{% if field.name == 'email' %}envelope{% elif field.name == 'first_name' or field.name == 'last_name' %}user{% elif field.name == 'student_id' %}id-card{% elif field.name == 'phone_number' %}phone{% elif field.name == 'department' %}building{% elif field.name == 'graduation_year' %}graduation-cap{% else %}user{% endif %} text-gray-400"></i>
+                    </div>
+                    {{ field }}
+                  </div>
+                  {% if field.errors %}
+                  <p class="mt-1 text-sm text-red-600">{{ field.errors }}</p>
+                  {% endif %}
+                </div>
+                {% endif %}
+              {% endfor %}
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{% trans "Password" %}</label>
+                  <div class="relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                    {{ form.password1 }}
+                  </div>
+                  {% if form.password1.errors %}
+                  <p class="mt-1 text-sm text-red-600">{{ form.password1.errors }}</p>
+                  {% endif %}
+                </div>
+                
+                <div>
+                  <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{% trans "Confirm Password" %}</label>
+                  <div class="relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                    {{ form.password2 }}
+                  </div>
+                  {% if form.password2.errors %}
+                  <p class="mt-1 text-sm text-red-600">{{ form.password2.errors }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <!-- Form fields are now rendered dynamically above -->
+              
+              {% if redirect_field_value %}
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+              {% endif %}
+              
+              <div class="mt-8">
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-all duration-200 font-medium">{% trans "Sign Up" %}</button>
+              </div>
+              
+              <div class="text-center mt-6">
+                <p class="text-gray-600">{% trans "Already have an account?" %} <a href="{% url 'account_login' %}" class="text-secondary hover:text-primary font-medium">{% trans "Sign In" %}</a></p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

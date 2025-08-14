@@ -6,6 +6,43 @@ from datetime import timedelta
 
 User = get_user_model()
 
+class AdsBanner(models.Model):
+    BANNER_TYPES = [
+        ('sponsor', 'Sponsor'),
+        ('event', 'Event'),
+        ('announcement', 'Announcement'),
+        ('club', 'Club'),
+    ]
+    
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    banner_type = models.CharField(max_length=20, choices=BANNER_TYPES, default='sponsor')
+    image = models.ImageField(upload_to='banners/', blank=True, null=True)
+    url = models.URLField(blank=True)
+    sponsor = models.CharField(max_length=100, blank=True)
+    is_active = models.BooleanField(default=True)
+    start_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(null=True, blank=True)
+    priority = models.PositiveSmallIntegerField(default=0, help_text="Higher number means higher priority")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-priority', '-start_date']
+        verbose_name = 'Advertisement Banner'
+        verbose_name_plural = 'Advertisement Banners'
+    
+    def __str__(self):
+        return self.title
+    
+    @property
+    def is_current(self):
+        today = timezone.now().date()
+        if not self.is_active:
+            return False
+        if self.end_date and self.end_date < today:
+            return False
+        return True
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     icon = models.CharField(max_length=50, default='tag')

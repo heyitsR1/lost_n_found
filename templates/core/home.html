@@ -5,39 +5,39 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <video src="{% static 'media/video.mp4' %}" autoplay muted loop></video>
-        <div class="row align-items-center">
-            <div class="col-lg-6 fade-in">
+<section class="bg-gradient-to-r from-secondary to-blue-400 min-h-[60vh] flex items-center relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <video src="{% static 'media/video.mp4' %}" autoplay muted loop class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30"></video>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div class="animate-fade-in">
                 <div class="text-white">
-                    <h1 class="display-4 fw-bold mb-4">
-                        <i class="fas fa-search-location me-3 animated-icon"></i>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                        <i class="fas fa-search-location mr-3 animate-pulse"></i>
                         Lost N Found
                     </h1>
-                    <p class="lead mb-4">
+                    <p class="text-xl mb-6">
                         I have... lost something or found something. Let's help each other find what's missing.
                     </p>
-                    <div class="d-flex gap-3">
+                    <div class="flex flex-wrap gap-4">
                         {% if user.is_authenticated %}
-                            <a href="{% url 'core:item_create' %}" class="btn btn-light btn-lg">
-                                <i class="fas fa-plus me-2"></i>Post Item
+                            <a href="{% url 'core:item_create' %}" class="px-6 py-3 bg-white text-primary font-medium rounded-md shadow-md hover:bg-gray-100 transition duration-300">
+                                <i class="fas fa-plus mr-2"></i>Post Item
                             </a>
                         {% else %}
-                            <a href="{% url 'account_signup' %}" class="btn btn-light btn-lg">
-                                <i class="fas fa-user-plus me-2"></i>Register
+                            <a href="{% url 'account_signup' %}" class="px-6 py-3 bg-white text-primary font-medium rounded-md shadow-md hover:bg-gray-100 transition duration-300">
+                                <i class="fas fa-user-plus mr-2"></i>Register
                             </a>
-                            <a href="{% url 'account_login' %}" class="btn btn-outline-light btn-lg">
-                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            <a href="{% url 'account_login' %}" class="px-6 py-3 bg-transparent border border-white text-white font-medium rounded-md hover:bg-white hover:bg-opacity-10 transition duration-300">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Sign In
                             </a>
                         {% endif %}
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 text-center fade-in">
-                <div class="position-relative">
-                    <div class="bg-white rounded-circle d-inline-block p-4 shadow-lg tilt-card">
-                        <i class="fas fa-search-location text-primary animated-icon" style="font-size: 4rem;"></i>
+            <div class="text-center animate-fade-in hidden lg:block">
+                <div class="relative">
+                    <div class="bg-white rounded-full inline-block p-8 shadow-xl transform hover:-translate-y-2 transition duration-300">
+                        <i class="fas fa-search-location text-primary animate-pulse" style="font-size: 4rem;"></i>
                     </div>
                 </div>
             </div>
@@ -46,45 +46,45 @@
 </section>
 
 <!-- Action Cards Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="row g-4">
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-center">
+            <div class="w-full lg:w-2/3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Lost Card -->
-                    <div class="col-md-6 fade-in">
-                        <div class="action-card lost-card text-white p-4 h-100 tilt-card">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
-                                    <i class="fas fa-exclamation-triangle fa-2x animated-icon"></i>
+                    <div class="animate-fade-in">
+                        <div class="bg-red-600 text-white p-6 h-full rounded-lg shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white bg-opacity-25 rounded-full p-3 mr-3">
+                                    <i class="fas fa-exclamation-triangle text-2xl animate-pulse"></i>
                                 </div>
                                 <div>
-                                    <h3 class="fw-bold mb-0">Lost</h3>
+                                    <h3 class="font-bold text-xl mb-0">Lost</h3>
                                     <p class="mb-0 opacity-75">Something missing?</p>
                                 </div>
                             </div>
-                            <p class="mb-4">Report your lost item and let our community help you find it.</p>
-                            <a href="{% url 'core:item_create' %}?type=lost" class="btn btn-light">
-                                <i class="fas fa-plus me-2"></i>Report Lost Item
+                            <p class="mb-6">Report your lost item and let our community help you find it.</p>
+                            <a href="{% url 'core:item_create' %}?type=lost" class="inline-block px-4 py-2 bg-white text-red-600 font-medium rounded-md hover:bg-gray-100 transition duration-300">
+                                <i class="fas fa-plus mr-2"></i>Report Lost Item
                             </a>
                         </div>
                     </div>
                     
                     <!-- Found Card -->
-                    <div class="col-md-6 fade-in">
-                        <div class="action-card found-card text-white p-4 h-100 tilt-card">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
-                                    <i class="fas fa-hand-holding-heart fa-2x animated-icon"></i>
+                    <div class="animate-fade-in">
+                        <div class="bg-green-600 text-white p-6 h-full rounded-lg shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white bg-opacity-25 rounded-full p-3 mr-3">
+                                    <i class="fas fa-hand-holding-heart text-2xl animate-pulse"></i>
                                 </div>
                                 <div>
-                                    <h3 class="fw-bold mb-0">Found</h3>
+                                    <h3 class="font-bold text-xl mb-0">Found</h3>
                                     <p class="mb-0 opacity-75">Found something?</p>
                                 </div>
                             </div>
-                            <p class="mb-4">Help return found items to their rightful owners.</p>
-                            <a href="{% url 'core:item_create' %}?type=found" class="btn btn-light">
-                                <i class="fas fa-plus me-2"></i>Report Found Item
+                            <p class="mb-6">Help return found items to their rightful owners.</p>
+                            <a href="{% url 'core:item_create' %}?type=found" class="inline-block px-4 py-2 bg-white text-green-600 font-medium rounded-md hover:bg-gray-100 transition duration-300">
+                                <i class="fas fa-plus mr-2"></i>Report Found Item
                             </a>
                         </div>
                     </div>
@@ -95,25 +95,25 @@
 </section>
 
 <!-- Statistics Section -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 mb-4 fade-in">
-                <div class="stats-card tilt-card">
-                    <div class="stats-number">{{ total_items }}</div>
-                    <div class="stats-label">Total Items</div>
+<section class="py-12 bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div class="mb-4 animate-fade-in">
+                <div class="bg-white p-6 rounded-lg shadow-md transform hover:-translate-y-2 transition duration-300">
+                    <div class="text-4xl font-bold text-primary mb-2">{{ total_items }}</div>
+                    <div class="text-gray-600 font-medium">Total Items</div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4 fade-in">
-                <div class="stats-card tilt-card">
-                    <div class="stats-number text-danger">{{ lost_items }}</div>
-                    <div class="stats-label">Lost Items</div>
+            <div class="mb-4 animate-fade-in">
+                <div class="bg-white p-6 rounded-lg shadow-md transform hover:-translate-y-2 transition duration-300">
+                    <div class="text-4xl font-bold text-red-600 mb-2">{{ lost_items }}</div>
+                    <div class="text-gray-600 font-medium">Lost Items</div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4 fade-in">
-                <div class="stats-card tilt-card">
-                    <div class="stats-number text-success">{{ found_items }}</div>
-                    <div class="stats-label">Found Items</div>
+            <div class="mb-4 animate-fade-in">
+                <div class="bg-white p-6 rounded-lg shadow-md transform hover:-translate-y-2 transition duration-300">
+                    <div class="text-4xl font-bold text-green-600 mb-2">{{ found_items }}</div>
+                    <div class="text-gray-600 font-medium">Found Items</div>
                 </div>
             </div>
         </div>
@@ -121,33 +121,33 @@
 </section>
 
 <!-- Recent Items Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 mb-4 fade-in">
-                <h3 class="fw-bold mb-4">
-                    <i class="fas fa-exclamation-triangle text-danger me-2 animated-icon"></i>
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="mb-8 animate-fade-in">
+                <h3 class="font-bold text-2xl mb-6">
+                    <i class="fas fa-exclamation-triangle text-red-600 mr-2 animate-pulse"></i>
                     Recent Lost Items
                 </h3>
                 {% if recent_lost %}
-                    <div class="row g-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {% for item in recent_lost %}
-                            <div class="col-md-6">
-                                <div class="card h-100 tilt-card">
+                            <div>
+                                <div class="bg-white rounded-lg shadow-md h-full transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
                                     {% if item.images.first %}
-                                        <img src="{{ item.images.first.image.url }}" class="card-img-top" alt="{{ item.title }}" style="height: 150px; object-fit: cover;">
+                                        <img src="{{ item.images.first.image.url }}" class="w-full h-40 object-cover rounded-t-lg" alt="{{ item.title }}">
                                     {% else %}
-                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
-                                            <i class="fas fa-image text-muted fa-2x"></i>
+                                        <div class="w-full h-40 bg-gray-100 flex items-center justify-center rounded-t-lg">
+                                            <i class="fas fa-image text-gray-400 text-2xl"></i>
                                         </div>
                                     {% endif %}
-                                    <div class="card-body">
-                                        <h6 class="card-title">{{ item.title }}</h6>
-                                        <p class="card-text small text-muted">{{ item.location }}</p>
-                                        <small class="text-muted">{{ item.created_at|timesince }} ago</small>
+                                    <div class="p-4">
+                                        <h6 class="font-medium text-lg mb-2">{{ item.title }}</h6>
+                                        <p class="text-sm text-gray-500 mb-2">{{ item.location }}</p>
+                                        <p class="text-sm text-gray-500 mb-4">{{ item.created_at|timesince }} ago</p>
                                     </div>
-                                    <div class="card-footer bg-transparent">
-                                        <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <div class="px-4 py-3 border-t border-gray-100">
+                                        <a href="{% url 'core:item_detail' item.pk %}" class="inline-block px-4 py-2 border border-primary text-primary text-sm font-medium rounded hover:bg-primary hover:text-white transition duration-300">
                                             View Details
                                         </a>
                                     </div>
@@ -156,37 +156,37 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-inbox text-muted fa-3x mb-3"></i>
-                        <p class="text-muted">No lost items reported yet.</p>
+                    <div class="text-center py-8 bg-white rounded-lg shadow-sm">
+                        <i class="fas fa-inbox text-gray-400 text-3xl mb-4"></i>
+                        <p class="text-gray-500">No lost items reported yet.</p>
                     </div>
                 {% endif %}
             </div>
             
-            <div class="col-lg-6 mb-4 fade-in">
-                <h3 class="fw-bold mb-4">
-                    <i class="fas fa-hand-holding-heart text-success me-2 animated-icon"></i>
+            <div class="mb-8 animate-fade-in">
+                <h3 class="font-bold text-2xl mb-6">
+                    <i class="fas fa-hand-holding-heart text-green-600 mr-2 animate-pulse"></i>
                     Recent Found Items
                 </h3>
                 {% if recent_found %}
-                    <div class="row g-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {% for item in recent_found %}
-                            <div class="col-md-6">
-                                <div class="card h-100 tilt-card">
+                            <div>
+                                <div class="bg-white rounded-lg shadow-md h-full transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
                                     {% if item.images.first %}
-                                        <img src="{{ item.images.first.image.url }}" class="card-img-top" alt="{{ item.title }}" style="height: 150px; object-fit: cover;">
+                                        <img src="{{ item.images.first.image.url }}" class="w-full h-40 object-cover rounded-t-lg" alt="{{ item.title }}">
                                     {% else %}
-                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
-                                            <i class="fas fa-image text-muted fa-2x"></i>
+                                        <div class="w-full h-40 bg-gray-100 flex items-center justify-center rounded-t-lg">
+                                            <i class="fas fa-image text-gray-400 text-2xl"></i>
                                         </div>
                                     {% endif %}
-                                    <div class="card-body">
-                                        <h6 class="card-title">{{ item.title }}</h6>
-                                        <p class="card-text small text-muted">{{ item.location }}</p>
-                                        <small class="text-muted">{{ item.created_at|timesince }} ago</small>
+                                    <div class="p-4">
+                                        <h6 class="font-medium text-lg mb-2">{{ item.title }}</h6>
+                                        <p class="text-sm text-gray-500 mb-2">{{ item.location }}</p>
+                                        <p class="text-sm text-gray-500 mb-4">{{ item.created_at|timesince }} ago</p>
                                     </div>
-                                    <div class="card-footer bg-transparent">
-                                        <a href="{% url 'core:item_detail' item.pk %}" class="btn btn-sm btn-outline-success">
+                                    <div class="px-4 py-3 border-t border-gray-100">
+                                        <a href="{% url 'core:item_detail' item.pk %}" class="inline-block px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded hover:bg-green-600 hover:text-white transition duration-300">
                                             View Details
                                         </a>
                                     </div>
@@ -195,9 +195,9 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-inbox text-muted fa-3x mb-3"></i>
-                        <p class="text-muted">No found items reported yet.</p>
+                    <div class="text-center py-8 bg-white rounded-lg shadow-sm">
+                        <i class="fas fa-inbox text-gray-400 text-3xl mb-4"></i>
+                        <p class="text-gray-500">No found items reported yet.</p>
                     </div>
                 {% endif %}
             </div>
@@ -206,30 +206,30 @@
 </section>
 
 <!-- Search Section -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 fade-in">
-                <div class="text-center mb-4">
-                    <h3 class="fw-bold">Search for Items</h3>
-                    <p class="text-muted">Find lost items or check if your found item has been reported</p>
+<section class="py-12 bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-center">
+            <div class="w-full lg:w-2/3 animate-fade-in">
+                <div class="text-center mb-6">
+                    <h3 class="font-bold text-2xl mb-2">Search for Items</h3>
+                    <p class="text-gray-600">Find lost items or check if your found item has been reported</p>
                 </div>
-                <div class="search-box p-4 tilt-card">
+                <div class="bg-white p-6 rounded-lg shadow-md transform hover:-translate-y-1 transition duration-300">
                     <form method="get" action="{% url 'core:item_list' %}">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <input type="text" name="search" class="form-control" placeholder="Search items...">
+                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                            <div class="md:col-span-3">
+                                <input type="text" name="search" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Search items...">
                             </div>
-                            <div class="col-md-3">
-                                <select name="type" class="form-select">
+                            <div class="md:col-span-1">
+                                <select name="type" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-white">
                                     <option value="">All Types</option>
                                     <option value="lost">Lost</option>
                                     <option value="found">Found</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-search me-2"></i>Search
+                            <div class="md:col-span-2">
+                                <button type="submit" class="w-full px-4 py-2 bg-primary text-white font-medium rounded-md hover:bg-opacity-90 transition duration-300">
+                                    <i class="fas fa-search mr-2"></i>Search
                                 </button>
                             </div>
                         </div>
@@ -242,21 +242,19 @@
 
 <!-- Categories Section -->
 {% if categories %}
-<section class="py-5">
-    <div class="container">
-        <div class="text-center mb-4 fade-in">
-            <h3 class="fw-bold">Browse by Category</h3>
-            <p class="text-muted">Find items by category</p>
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8 animate-fade-in">
+            <h3 class="font-bold text-2xl mb-2">Browse by Category</h3>
+            <p class="text-gray-600">Find items by category</p>
         </div>
-        <div class="row g-3">
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {% for category in categories %}
-                <div class="col-md-3 col-sm-6 fade-in">
-                    <a href="{% url 'core:item_list' %}?category={{ category.id }}" class="text-decoration-none">
-                        <div class="card text-center h-100 tilt-card">
-                            <div class="card-body">
-                                <i class="fas fa-{{ category.icon|default:'tag' }} fa-2x mb-3 animated-icon" style="color: {{ category.color }};"></i>
-                                <h6 class="card-title">{{ category.name }}</h6>
-                            </div>
+                <div class="animate-fade-in">
+                    <a href="{% url 'core:item_list' %}?category={{ category.id }}" class="no-underline">
+                        <div class="bg-white text-center p-6 rounded-lg shadow-md h-full transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
+                            <i class="fas fa-{{ category.icon|default:'tag' }} text-2xl mb-4 animate-pulse" style="color: {{ category.color }};"></i>
+                            <h6 class="font-medium text-lg">{{ category.name }}</h6>
                         </div>
                     </a>
                 </div>
@@ -265,4 +263,4 @@
     </div>
 </section>
 {% endif %}
-{% endblock %} 
+{% endblock %}

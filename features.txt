@@ -1,0 +1,14 @@
+Goal is to create a fully functional lost and found portal. 
+It should be a modular software bundle we can sell as a product to other companies and brands
+Primarily devloped for kings college but should be developed in such a way that tweaking the branding is easy 
+
+Features already implemented: 
+A basic looking prototype with a login page, a lost items page, a found items page, and a admin page, most things are already there at the basic level 
+
+Features to add: 
+Ads and banner section which will have ads from sponsors, or promote college events, or clubs, these should be dynamic/collapsable in case there isn't any ads, 
+this is an aspect from which the software will be able to generate revenue, since schools and colleges will be running them, we won't pollute the user experience with google ads
+Styling for signup and login are not done, we need to make sure that the login and signup pages are user friendly and look good
+go for a modern look overall, 
+tweak the css when needed
+

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Location, Item, ItemImage, Contact
+from .models import Category, Location, Item, ItemImage, Contact, AdsBanner
 
 
 @admin.register(Category)
@@ -104,3 +104,34 @@ class ContactAdmin(admin.ModelAdmin):
         return obj.item.title
     item_title.short_description = 'Item'
     item_title.admin_order_field = 'item__title'
+
+
+@admin.register(AdsBanner)
+class AdsBannerAdmin(admin.ModelAdmin):
+    list_display = ['title', 'banner_type', 'sponsor', 'is_active', 'start_date', 'end_date', 'priority', 'is_current_display']
+    list_filter = ['banner_type', 'is_active', 'start_date', 'end_date']
+    search_fields = ['title', 'description', 'sponsor']
+    readonly_fields = ['created_at']
+    date_hierarchy = 'start_date'
+    
+    fieldsets = (
+        ('Banner Information', {
+            'fields': ('title', 'description', 'banner_type', 'sponsor')
+        }),
+        ('Display Settings', {
+            'fields': ('image', 'url')
+        }),
+        ('Visibility Settings', {
+            'fields': ('is_active', 'start_date', 'end_date', 'priority')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def is_current_display(self, obj):
+        if obj.is_current:
+            return format_html('<span style="color: green;">✓ Active</span>')
+        return format_html('<span style="color: red;">✗ Inactive</span>')
+    is_current_display.short_description = 'Current Status'
