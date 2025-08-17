@@ -9,7 +9,7 @@ class ItemForm(forms.ModelForm):
         model = Item
         fields = [
             'title', 'description', 'item_type', 'category', 'location',
-            'contact_name', 'contact_email', 'contact_phone', 'reward', 'is_urgent'
+            'contact_name', 'contact_email', 'contact_phone', 'reward', 'reward_coins', 'is_urgent'
         ]
         widgets = {
             'title': forms.TextInput(attrs={
@@ -41,6 +41,12 @@ class ItemForm(forms.ModelForm):
                 'placeholder': '0.00',
                 'step': '0.01',
                 'min': '0'
+            }),
+            'reward_coins': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0',
+                'min': '0',
+                'help_text': 'Offer reward coins to encourage people to help find your item'
             }),
             'is_urgent': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

@@ -7,7 +7,7 @@ class CustomSignupForm(SignupForm):
     student_id = forms.CharField(
         max_length=20,
         widget=forms.TextInput(attrs={
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'Enter your student ID (e.g., K123456)'
         }),
         help_text='Enter your university student ID (e.g., K123456)'
@@ -15,14 +15,14 @@ class CustomSignupForm(SignupForm):
     first_name = forms.CharField(
         max_length=30,
         widget=forms.TextInput(attrs={
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'First Name'
         })
     )
     last_name = forms.CharField(
         max_length=30,
         widget=forms.TextInput(attrs={
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'Last Name'
         })
     )
@@ -30,7 +30,7 @@ class CustomSignupForm(SignupForm):
         max_length=15,
         required=False,
         widget=forms.TextInput(attrs={
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'Phone Number (optional)'
         })
     )
@@ -38,14 +38,14 @@ class CustomSignupForm(SignupForm):
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'Department (optional)'
         })
     )
     graduation_year = forms.IntegerField(
         required=False,
         widget=forms.NumberInput(attrs={
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'Graduation Year (optional)',
             'min': '2020',
             'max': '2030'
@@ -56,16 +56,16 @@ class CustomSignupForm(SignupForm):
         super().__init__(*args, **kwargs)
         # Update password fields with correct CSS classes
         self.fields['password1'].widget.attrs.update({
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'Password'
         })
         self.fields['password2'].widget.attrs.update({
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'Confirm Password'
         })
         # Update email field with correct CSS classes
         self.fields['email'].widget.attrs.update({
-            'class': 'block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary',
+            'class': 'form-control',
             'placeholder': 'Email address'
         })
 

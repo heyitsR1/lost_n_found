@@ -292,3 +292,4 @@ For support and questions:
 **Built with ❤️ for universities worldwide**
 
 *This system is designed to be easily deployable and customizable for any educational institution, making it an ideal solution for universities looking to modernize their lost and found operations.*
+

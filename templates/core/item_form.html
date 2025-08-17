@@ -126,7 +126,7 @@
 
                         <!-- Additional Details -->
                         <div class="row mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="{{ form.reward.id_for_label }}" class="form-label">
                                     <i class="fas fa-dollar-sign text-warning me-2"></i>Reward (Optional)
                                 </label>
@@ -134,9 +134,19 @@
                                 {% if form.reward.errors %}
                                     <div class="text-danger small">{{ form.reward.errors }}</div>
                                 {% endif %}
-                                <div class="form-text">Offer a reward to encourage people to help find your item.</div>
+                                <div class="form-text">Offer a monetary reward to encourage people to help find your item.</div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="{{ form.reward_coins.id_for_label }}" class="form-label">
+                                    <i class="fas fa-coins text-warning me-2"></i>Reward Coins (Optional)
+                                </label>
+                                {{ form.reward_coins }}
+                                {% if form.reward_coins.errors %}
+                                    <div class="text-danger small">{{ form.reward_coins.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Offer reward coins that can be redeemed for vouchers.</div>
+                            </div>
+                            <div class="col-md-4">
                                 <div class="form-check mt-4">
                                     {{ form.is_urgent }}
                                     <label class="form-check-label" for="{{ form.is_urgent.id_for_label }}">

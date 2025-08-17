@@ -95,6 +95,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 6,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -134,13 +137,11 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-# Disable email verification for now
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Changed from 'mandatory' to 'none'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
-ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300
+# Updated allauth settings
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_RATE_LIMITS = {'login_failed': '5/5m'}
 
 # Custom signup form
 ACCOUNT_FORMS = {

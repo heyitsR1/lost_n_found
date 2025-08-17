@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Location, Item, ItemImage, Contact, AdsBanner
+from .models import Category, Location, Item, ItemImage, Contact, AdsBanner, RewardCoin, CoinTransaction, Voucher, VoucherRedemption
 
 
 @admin.register(Category)
@@ -50,7 +50,7 @@ class ContactInline(admin.TabularInline):
 class ItemAdmin(admin.ModelAdmin):
     list_display = [
         'title', 'item_type', 'status', 'category', 'location', 
-        'user', 'created_at', 'is_urgent_display'
+        'user', 'created_at', 'is_urgent_display', 'reward_coins_display'
     ]
     list_filter = [
         'item_type', 'status', 'category', 'location', 
@@ -72,7 +72,7 @@ class ItemAdmin(admin.ModelAdmin):
             'fields': ('contact_name', 'contact_email', 'contact_phone')
         }),
         ('Additional Details', {
-            'fields': ('reward', 'is_urgent')
+            'fields': ('reward', 'reward_coins', 'is_urgent')
         }),
         ('User & Timestamps', {
             'fields': ('user', 'created_at', 'updated_at', 'claimed_at'),
@@ -85,6 +85,12 @@ class ItemAdmin(admin.ModelAdmin):
             return format_html('<span style="color: red;">⚠️ URGENT</span>')
         return ''
     is_urgent_display.short_description = 'Urgent'
+    
+    def reward_coins_display(self, obj):
+        if obj.reward_coins > 0:
+            return format_html('<span style="color: gold;">🪙 {} coins</span>', obj.reward_coins)
+        return ''
+    reward_coins_display.short_description = 'Reward Coins'
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(
@@ -135,3 +141,48 @@ class AdsBannerAdmin(admin.ModelAdmin):
             return format_html('<span style="color: green;">✓ Active</span>')
         return format_html('<span style="color: red;">✗ Inactive</span>')
     is_current_display.short_description = 'Current Status'
+
+
+@admin.register(RewardCoin)
+class RewardCoinAdmin(admin.ModelAdmin):
+    list_display = ['user', 'coins', 'total_earned', 'total_spent', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['user__email', 'user__first_name', 'user__last_name']
+    readonly_fields = ['created_at', 'updated_at']
+    date_hierarchy = 'created_at'
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
+
+
+@admin.register(CoinTransaction)
+class CoinTransactionAdmin(admin.ModelAdmin):
+    list_display = ['user', 'amount', 'transaction_type', 'reason', 'created_at']
+    list_filter = ['transaction_type', 'created_at']
+    search_fields = ['user__email', 'reason']
+    readonly_fields = ['created_at']
+    date_hierarchy = 'created_at'
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')
+
+
+@admin.register(Voucher)
+class VoucherAdmin(admin.ModelAdmin):
+    list_display = ['name', 'voucher_type', 'coin_cost', 'value', 'is_active', 'created_at']
+    list_filter = ['voucher_type', 'is_active', 'created_at']
+    search_fields = ['name', 'description']
+    readonly_fields = ['created_at']
+    date_hierarchy = 'created_at'
+
+
+@admin.register(VoucherRedemption)
+class VoucherRedemptionAdmin(admin.ModelAdmin):
+    list_display = ['user', 'voucher', 'redeemed_at', 'is_used', 'used_at']
+    list_filter = ['is_used', 'redeemed_at', 'voucher__voucher_type']
+    search_fields = ['user__email', 'voucher__name']
+    readonly_fields = ['redeemed_at']
+    date_hierarchy = 'redeemed_at'
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'voucher')

@@ -74,7 +74,7 @@
         <div class="row g-4">
             {% for item in page_obj %}
                 <div class="col-lg-4 col-md-6 fade-in">
-                    <div class="card h-100 tilt-card">
+                    <div class="card h-100">
                         {% if item.images.first %}
                             <img src="{{ item.images.first.image.url }}" class="card-img-top" alt="{{ item.title }}" style="height: 200px; object-fit: cover;">
                         {% else %}
@@ -111,6 +111,14 @@
                                 <div class="mb-2">
                                     <span class="badge bg-warning text-dark">
                                         <i class="fas fa-dollar-sign me-1"></i>Reward: ${{ item.reward }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                            
+                            {% if item.reward_coins %}
+                                <div class="mb-2">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-coins me-1"></i>Reward: {{ item.reward_coins }} coins
                                     </span>
                                 </div>
                             {% endif %}

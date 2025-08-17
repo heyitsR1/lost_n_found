@@ -218,3 +218,23 @@ def about(request):
 def contact_us(request):
     """Contact us page"""
     return render(request, 'core/contact.html')
+
+
+def test_auth(request):
+    """Test authentication view"""
+    if request.method == 'POST':
+        from django.contrib.auth import authenticate, login
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        if email and password:
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                login(request, user)
+                return JsonResponse({'success': True, 'message': f'Logged in as {user.email}'})
+            else:
+                return JsonResponse({'success': False, 'message': 'Invalid credentials'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Missing email or password'})
+    
+    return render(request, 'core/test_auth.html')

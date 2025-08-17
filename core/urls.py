@@ -21,4 +21,7 @@ urlpatterns = [
     
     # Search
     path('search/', views.search_items, name='search_items'),
+    
+    # Test authentication
+    path('test-auth/', views.test_auth, name='test_auth'),
 ] 
