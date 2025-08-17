@@ -33,6 +33,8 @@ def item_list(request):
     category_id = request.GET.get('category')
     status = request.GET.get('status')
     search = request.GET.get('search')
+    location_type = request.GET.get('location_type')
+    floor_area = request.GET.get('floor_area')
     
     if item_type:
         items = items.filter(item_type=item_type)
@@ -40,12 +42,18 @@ def item_list(request):
         items = items.filter(category_id=category_id)
     if status:
         items = items.filter(status=status)
+    if location_type:
+        items = items.filter(location__location_type=location_type)
+    if floor_area:
+        items = items.filter(location__floor_area=floor_area)
     if search:
         items = items.filter(
             Q(title__icontains=search) |
             Q(description__icontains=search) |
             Q(category__name__icontains=search) |
-            Q(location__name__icontains=search)
+            Q(location__location_type__icontains=search) |
+            Q(location__floor_area__icontains=search) |
+            Q(location__specific_location__icontains=search)
         )
     
     # Pagination
@@ -62,6 +70,8 @@ def item_list(request):
             'category': category_id,
             'status': status,
             'search': search,
+            'location_type': location_type,
+            'floor_area': floor_area,
         }
     }
     return render(request, 'core/item_list.html', context)

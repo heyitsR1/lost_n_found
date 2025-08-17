@@ -146,6 +146,16 @@ class SearchForm(forms.Form):
         empty_label="All Categories",
         widget=forms.Select(attrs={'class': 'form-select'})
     )
+    location_type = forms.ChoiceField(
+        choices=[('', 'All Floors')] + Location.LOCATION_TYPES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    floor_area = forms.ChoiceField(
+        choices=[('', 'All Areas')] + Location.FLOOR_AREAS,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
     status = forms.ChoiceField(
         choices=[('', 'All Status'), ('active', 'Active'), ('claimed', 'Claimed')],
         required=False,

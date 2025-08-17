@@ -55,15 +55,88 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 class Location(models.Model):
-    name = models.CharField(max_length=200)
-    building = models.CharField(max_length=100, blank=True)
-    floor = models.CharField(max_length=20, blank=True)
-    room = models.CharField(max_length=20, blank=True)
+    LOCATION_TYPES = [
+        ('parking', 'Parking Space'),
+        ('ground_floor', 'Ground Floor'),
+        ('first_floor', 'First Floor'),
+        ('second_floor', 'Second Floor'),
+        ('third_floor', 'Third Floor'),
+        ('fourth_floor', 'Fourth Floor'),
+        ('fifth_floor', 'Fifth Floor'),
+        ('sixth_floor', 'Sixth Floor'),
+        ('seventh_floor', 'Seventh Floor'),
+    ]
+    
+    FLOOR_AREAS = [
+        # Ground Floor
+        ('library', 'Library'),
+        ('it_lab', 'IT Lab'),
+        ('kafe_kodes', 'Kafe Kodes'),
+        ('bathroom', 'Bathroom'),
+        
+        # First Floor (Admin Section)
+        ('admin_section', 'Admin Section'),
+        ('academic_support', 'Academic Support'),
+        ('found_items_drop', 'Found Items Drop-off'),
+        ('items_claim', 'Items Claim Center'),
+        
+        # Class Floors (2nd-5th)
+        ('class_201', 'Class 201'),
+        ('class_202', 'Class 202'),
+        ('class_203', 'Class 203'),
+        ('class_204', 'Class 204'),
+        ('class_301', 'Class 301'),
+        ('class_302', 'Class 302'),
+        ('class_303', 'Class 303'),
+        ('class_304', 'Class 304'),
+        ('class_401', 'Class 401'),
+        ('class_402', 'Class 402'),
+        ('class_403', 'Class 403'),
+        ('class_404', 'Class 404'),
+        ('class_501', 'Class 501'),
+        ('class_502', 'Class 502'),
+        ('class_503', 'Class 503'),
+        ('class_504', 'Class 504'),
+        
+        # Sixth Floor
+        ('program_hall', 'Program Hall'),
+        ('dolab', 'DoLab'),
+        ('cipl', 'CIPL'),
+        ('table_tennis', 'Table Tennis Board'),
+        
+        # Seventh Floor
+        ('canteen', 'Canteen'),
+        
+        # Club Rooms
+        ('tech_club', 'Tech Club'),
+        ('finance_club', 'Finance Club'),
+        ('social_club', 'Social Club'),
+        ('athletics_club', 'Athletics Club'),
+        ('literature_club', 'Literature Club'),
+        ('skillbee_club', 'SkillBee Club'),
+        
+        # Other
+        ('other', 'Other Location'),
+    ]
+    
+    location_type = models.CharField(max_length=20, choices=LOCATION_TYPES, default='other')
+    floor_area = models.CharField(max_length=20, choices=FLOOR_AREAS, default='other')
+    specific_location = models.CharField(max_length=200, blank=True, help_text="Specific details like 'near entrance', 'back corner', etc.")
     
     def __str__(self):
-        if self.building:
-            return f"{self.name} - {self.building}"
-        return self.name
+        if self.specific_location:
+            return f"{self.get_location_type_display()} - {self.get_floor_area_display()} - {self.specific_location}"
+        return f"{self.get_location_type_display()} - {self.get_floor_area_display()}"
+    
+    def get_full_location(self):
+        """Get the complete location string"""
+        if self.specific_location:
+            return f"{self.get_location_type_display()} - {self.get_floor_area_display()} - {self.specific_location}"
+        return f"{self.get_location_type_display()} - {self.get_floor_area_display()}"
+    
+    class Meta:
+        verbose_name = 'Location'
+        verbose_name_plural = 'Locations'
 
 class RewardCoin(models.Model):
     """Reward coin system for users"""
@@ -171,12 +244,16 @@ class Item(models.Model):
         ('claimed', 'Claimed'),
         ('expired', 'Expired'),
         ('closed', 'Closed'),
+        ('pending_verification', 'Pending Admin Verification'),
+        ('verified', 'Admin Verified'),
+        ('dropped_off', 'Dropped at Admin Section'),
+        ('ready_for_claim', 'Ready for Claim at Admin Section'),
     ]
     
     title = models.CharField(max_length=200)
     description = models.TextField()
     item_type = models.CharField(max_length=10, choices=ITEM_TYPES)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+    status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='active')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     
@@ -197,6 +274,20 @@ class Item(models.Model):
     reward = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     reward_coins = models.PositiveIntegerField(default=0, help_text="Reward in coins")
     is_urgent = models.BooleanField(default=False)
+    
+    # Admin verification fields
+    admin_verified = models.BooleanField(default=False, help_text="Item verified by admin in person")
+    admin_verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_items')
+    admin_verified_at = models.DateTimeField(null=True, blank=True)
+    admin_notes = models.TextField(blank=True, help_text="Admin notes about the item")
+    
+    # Drop-off and claim fields
+    dropped_at_admin = models.BooleanField(default=False, help_text="Item physically dropped at admin section")
+    dropped_at_admin_date = models.DateTimeField(null=True, blank=True)
+    claimed_from_admin = models.BooleanField(default=False, help_text="Item claimed from admin section")
+    claimed_from_admin_date = models.DateTimeField(null=True, blank=True)
+    claimer_name = models.CharField(max_length=100, blank=True, help_text="Name of person claiming the item")
+    claimer_id_verified = models.BooleanField(default=False, help_text="Claimer's ID verified by admin")
     
     def __str__(self):
         return f"{self.get_item_type_display()}: {self.title}"
@@ -235,6 +326,32 @@ class ItemImage(models.Model):
     
     def __str__(self):
         return f"Image for {self.item.title}"
+
+class AdminOperation(models.Model):
+    """Track admin operations on items"""
+    OPERATION_TYPES = [
+        ('verify', 'Verify Item'),
+        ('drop_off', 'Mark as Dropped Off'),
+        ('claim', 'Process Claim'),
+        ('update_status', 'Update Status'),
+        ('add_note', 'Add Note'),
+    ]
+    
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='admin_operations')
+    operation_type = models.CharField(max_length=20, choices=OPERATION_TYPES)
+    admin_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_operations')
+    operation_date = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True)
+    previous_status = models.CharField(max_length=20, blank=True)
+    new_status = models.CharField(max_length=20, blank=True)
+    
+    def __str__(self):
+        return f"{self.get_operation_type_display()} on {self.item.title} by {self.admin_user.get_full_name()}"
+    
+    class Meta:
+        ordering = ['-operation_date']
+        verbose_name = 'Admin Operation'
+        verbose_name_plural = 'Admin Operations'
 
 class Contact(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='contacts')

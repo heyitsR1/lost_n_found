@@ -5,8 +5,17 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section text-white">
-    <div class="container">
+<section class="hero-section text-white position-relative overflow-hidden">
+    <!-- Video Background -->
+    <video class="hero-video-bg" autoplay muted loop playsinline>
+        <source src="/media/video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <!-- Video Overlay -->
+    <div class="hero-video-overlay"></div>
+    
+    <div class="container position-relative">
         <div class="row align-items-center min-vh-60">
             <div class="col-lg-6">
                 <h1 class="display-4 fw-bold mb-4 glitch" data-text="Lost Something?">

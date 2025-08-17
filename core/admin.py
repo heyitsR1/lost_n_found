@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Location, Item, ItemImage, Contact, AdsBanner, RewardCoin, CoinTransaction, Voucher, VoucherRedemption
+from django.utils import timezone
+from .models import Category, Location, Item, ItemImage, Contact, AdsBanner, RewardCoin, CoinTransaction, Voucher, VoucherRedemption, AdminOperation
 
 
 @admin.register(Category)
@@ -24,9 +25,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ['name', 'building', 'floor', 'room', 'item_count']
-    search_fields = ['name', 'building', 'room']
-    list_filter = ['building']
+    list_display = ['location_type', 'floor_area', 'specific_location', 'item_count']
+    search_fields = ['location_type', 'floor_area', 'specific_location']
+    list_filter = ['location_type', 'floor_area']
     
     def item_count(self, obj):
         return obj.items.count()
@@ -50,11 +51,11 @@ class ContactInline(admin.TabularInline):
 class ItemAdmin(admin.ModelAdmin):
     list_display = [
         'title', 'item_type', 'status', 'category', 'location', 
-        'user', 'created_at', 'is_urgent_display', 'reward_coins_display'
+        'user', 'created_at', 'is_urgent_display', 'reward_coins_display', 'admin_verified_display'
     ]
     list_filter = [
         'item_type', 'status', 'category', 'location', 
-        'is_urgent', 'created_at'
+        'is_urgent', 'created_at', 'admin_verified', 'dropped_at_admin'
     ]
     search_fields = ['title', 'description', 'user__username', 'user__email']
     readonly_fields = ['created_at', 'updated_at', 'claimed_at']
@@ -74,6 +75,14 @@ class ItemAdmin(admin.ModelAdmin):
         ('Additional Details', {
             'fields': ('reward', 'reward_coins', 'is_urgent')
         }),
+        ('Admin Verification', {
+            'fields': ('admin_verified', 'admin_verified_by', 'admin_verified_at', 'admin_notes'),
+            'classes': ('collapse',)
+        }),
+        ('Drop-off & Claim', {
+            'fields': ('dropped_at_admin', 'dropped_at_admin_date', 'claimed_from_admin', 'claimed_from_admin_date', 'claimer_name', 'claimer_id_verified'),
+            'classes': ('collapse',)
+        }),
         ('User & Timestamps', {
             'fields': ('user', 'created_at', 'updated_at', 'claimed_at'),
             'classes': ('collapse',)
@@ -91,6 +100,16 @@ class ItemAdmin(admin.ModelAdmin):
             return format_html('<span style="color: gold;">🪙 {} coins</span>', obj.reward_coins)
         return ''
     reward_coins_display.short_description = 'Reward Coins'
+    
+    def admin_verified_display(self, obj):
+        if obj.admin_verified:
+            return format_html('<span style="color: green;">✓ Verified</span>')
+        elif obj.dropped_at_admin:
+            return format_html('<span style="color: orange;">📦 Dropped</span>')
+        elif obj.status == 'pending_verification':
+            return format_html('<span style="color: yellow;">⏳ Pending</span>')
+        return format_html('<span style="color: red;">✗ Not Verified</span>')
+    admin_verified_display.short_description = 'Admin Status'
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(
@@ -186,3 +205,18 @@ class VoucherRedemptionAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user', 'voucher')
+
+
+@admin.register(AdminOperation)
+class AdminOperationAdmin(admin.ModelAdmin):
+    list_display = ['item', 'operation_type', 'admin_user', 'operation_date', 'status_change']
+    list_filter = ['operation_type', 'operation_date', 'admin_user']
+    search_fields = ['item__title', 'admin_user__email', 'notes']
+    readonly_fields = ['operation_date']
+    date_hierarchy = 'operation_date'
+    
+    def status_change(self, obj):
+        if obj.previous_status and obj.new_status:
+            return f"{obj.previous_status} → {obj.new_status}"
+        return "-"
+    status_change.short_description = 'Status Change'

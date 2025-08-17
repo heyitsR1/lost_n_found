@@ -44,10 +44,28 @@
                     </select>
                 </div>
                 <div class="col-md-2">
+                    <select name="location_type" class="form-select">
+                        <option value="">All Floors</option>
+                        <option value="parking" {% if filters.location_type == 'parking' %}selected{% endif %}>Parking</option>
+                        <option value="ground_floor" {% if filters.location_type == 'ground_floor' %}selected{% endif %}>Ground Floor</option>
+                        <option value="first_floor" {% if filters.location_type == 'first_floor' %}selected{% endif %}>First Floor</option>
+                        <option value="second_floor" {% if filters.location_type == 'second_floor' %}selected{% endif %}>Second Floor</option>
+                        <option value="third_floor" {% if filters.location_type == 'third_floor' %}selected{% endif %}>Third Floor</option>
+                        <option value="fourth_floor" {% if filters.location_type == 'fourth_floor' %}selected{% endif %}>Fourth Floor</option>
+                        <option value="fifth_floor" {% if filters.location_type == 'fifth_floor' %}selected{% endif %}>Fifth Floor</option>
+                        <option value="sixth_floor" {% if filters.location_type == 'sixth_floor' %}selected{% endif %}>Sixth Floor</option>
+                        <option value="seventh_floor" {% if filters.location_type == 'seventh_floor' %}selected{% endif %}>Seventh Floor</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <select name="status" class="form-select">
                         <option value="">All Status</option>
                         <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Active</option>
                         <option value="claimed" {% if filters.status == 'claimed' %}selected{% endif %}>Claimed</option>
+                        <option value="pending_verification" {% if filters.status == 'pending_verification' %}selected{% endif %}>Pending Verification</option>
+                        <option value="verified" {% if filters.status == 'verified' %}selected{% endif %}>Verified</option>
+                        <option value="dropped_off" {% if filters.status == 'dropped_off' %}selected{% endif %}>Dropped at Admin</option>
+                        <option value="ready_for_claim" {% if filters.status == 'ready_for_claim' %}selected{% endif %}>Ready for Claim</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -100,7 +118,7 @@
                             
                             <div class="row text-muted small mb-3">
                                 <div class="col-6">
-                                    <i class="fas fa-map-marker-alt me-1"></i>{{ item.location }}
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ item.location.get_full_location }}
                                 </div>
                                 <div class="col-6 text-end">
                                     <i class="fas fa-clock me-1"></i>{{ item.created_at|timesince }} ago
