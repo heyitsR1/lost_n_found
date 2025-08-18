@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from allauth.account.forms import SignupForm
+from django.contrib.auth import get_user_model
 from .models import CustomUser
 
 class CustomSignupForm(SignupForm):
@@ -69,6 +70,14 @@ class CustomSignupForm(SignupForm):
             'placeholder': 'Email address'
         })
 
+    def clean_student_id(self):
+        student_id = self.cleaned_data.get('student_id')
+        if student_id:
+            User = get_user_model()
+            if User.objects.filter(student_id=student_id).exists():
+                raise forms.ValidationError("A user with this Student ID already exists.")
+        return student_id
+    
     def save(self, request):
         user = super().save(request)
         user.student_id = self.cleaned_data['student_id']

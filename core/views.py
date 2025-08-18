@@ -6,7 +6,9 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.models import User
-from .models import Item, Category, Location, ItemImage, Contact
+from django.contrib.auth import authenticate, login
+from django.views.decorators.http import require_POST
+from .models import Item, Category, Location, ItemImage, Contact, Notification, AdsBanner
 from .forms import ItemForm, ContactForm
 import json
 
@@ -88,7 +90,7 @@ def item_detail(request, pk):
             contact.item = item
             contact.save()
             messages.success(request, 'Your message has been sent successfully!')
-            return redirect('item_detail', pk=pk)
+            return redirect('core:item_detail', pk=pk)
     else:
         contact_form = ContactForm()
     
@@ -126,7 +128,7 @@ def item_create(request):
                 )
             
             messages.success(request, f'Your {item.get_item_type_display()} item has been posted successfully!')
-            return redirect('item_detail', pk=item.pk)
+            return redirect('core:item_detail', pk=item.pk)
     else:
         form = ItemForm()
     
@@ -154,7 +156,7 @@ def item_update(request, pk):
                 ItemImage.objects.create(item=item, image=image)
             
             messages.success(request, 'Item updated successfully!')
-            return redirect('item_detail', pk=item.pk)
+            return redirect('core:item_detail', pk=item.pk)
     else:
         form = ItemForm(instance=item)
     
@@ -175,7 +177,7 @@ def item_delete(request, pk):
     if request.method == 'POST':
         item.delete()
         messages.success(request, 'Item deleted successfully!')
-        return redirect('item_list')
+        return redirect('core:item_list')
     
     return render(request, 'core/item_confirm_delete.html', {'item': item})
 
@@ -220,6 +222,32 @@ def search_items(request):
     return JsonResponse({'items': results})
 
 
+def debug_urls(request):
+    """Debug view to test URL resolution"""
+    from django.urls import reverse
+    try:
+        item_detail_url = reverse('core:item_detail', kwargs={'pk': 1})
+        item_list_url = reverse('core:item_list')
+        return JsonResponse({
+            'success': True,
+            'item_detail_url': item_detail_url,
+            'item_list_url': item_list_url,
+            'available_urls': [
+                'core:item_detail',
+                'core:item_list',
+                'core:item_create',
+                'core:item_update',
+                'core:item_delete'
+            ]
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'error_type': type(e).__name__
+        })
+
+
 def about(request):
     """About page"""
     return render(request, 'core/about.html')
@@ -233,7 +261,6 @@ def contact_us(request):
 def test_auth(request):
     """Test authentication view"""
     if request.method == 'POST':
-        from django.contrib.auth import authenticate, login
         email = request.POST.get('email')
         password = request.POST.get('password')
         
@@ -248,3 +275,43 @@ def test_auth(request):
             return JsonResponse({'success': False, 'message': 'Missing email or password'})
     
     return render(request, 'core/test_auth.html')
+
+
+@login_required
+def notifications_view(request):
+    """View for user notifications"""
+    notifications = request.user.notifications.all().order_by('-created_at')
+    
+    # Mark notifications as read when viewed
+    unread_notifications = notifications.filter(is_read=False)
+    if unread_notifications.exists():
+        unread_notifications.update(is_read=True)
+    
+    context = {
+        'notifications': notifications,
+        'unread_count': request.user.notifications.filter(is_read=False).count(),
+    }
+    return render(request, 'core/notifications.html', context)
+
+
+@login_required
+@require_POST
+def mark_notification_read(request, notification_id):
+    """Mark a notification as read via AJAX"""
+    try:
+        notification = get_object_or_404(Notification, id=notification_id, recipient=request.user)
+        notification.mark_as_read()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+def mark_all_notifications_read(request):
+    """Mark all user notifications as read"""
+    if request.method == 'POST':
+        request.user.notifications.filter(is_read=False).update(is_read=True)
+        messages.success(request, 'All notifications marked as read.')
+        return redirect('core:notifications')
+    
+    return redirect('core:notifications')

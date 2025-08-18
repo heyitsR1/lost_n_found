@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.ads_banners_processor',
+                'core.context_processors.notification_processor',
             ],
         },
     },
@@ -152,7 +153,24 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Email backend (console for development)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Email Configuration
+DEFAULT_FROM_EMAIL = "ekthal.org@gmail.com"
+ADMINS = [
+    ("Admin", "aarohan.niraula@westcliff.edu"),
+    ("Admin", "krish.naharki@westcliff.edu"),
+    ("Admin", "diwa.shrestha@westcliff.edu"),
+    ("Admin", "aadarsh.karn@westcliff.edu"),
+]
+
+# Email Backend Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # For Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'ekthal.org@gmail.com'
+EMAIL_HOST_PASSWORD = 'kotd spfp zkeb ynad'
 
 # Google OAuth Settings
 SOCIALACCOUNT_PROVIDERS = {

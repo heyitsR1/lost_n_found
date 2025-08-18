@@ -364,3 +364,122 @@ class Contact(models.Model):
     
     def __str__(self):
         return f"Contact from {self.name} for {self.item.title}"
+
+
+class Notification(models.Model):
+    """System notifications for users and admins"""
+    NOTIFICATION_TYPES = [
+        ('item_found', 'Item Found'),
+        ('item_claimed', 'Item Claimed'),
+        ('item_verified', 'Item Admin Verified'),
+        ('item_dropped_off', 'Item Dropped at Admin'),
+        ('item_ready_claim', 'Item Ready for Claim'),
+        ('admin_action', 'Admin Action Required'),
+        ('system_alert', 'System Alert'),
+        ('reward_earned', 'Reward Earned'),
+        ('contact_received', 'New Contact Message'),
+    ]
+    
+    PRIORITY_LEVELS = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('urgent', 'Urgent'),
+    ]
+    
+    notification_type = models.CharField(max_length=25, choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    priority = models.CharField(max_length=10, choices=PRIORITY_LEVELS, default='medium')
+    
+    # Recipients
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    is_admin_notification = models.BooleanField(default=False, help_text="If True, all admins will receive this notification")
+    
+    # Related objects
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True, blank=True, related_name='notifications')
+    admin_operation = models.ForeignKey(AdminOperation, on_delete=models.CASCADE, null=True, blank=True, related_name='notifications')
+    
+    # Status tracking
+    is_read = models.BooleanField(default=False)
+    is_sent = models.BooleanField(default=False, help_text="Email sent successfully")
+    sent_at = models.DateTimeField(null=True, blank=True)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Notification'
+        verbose_name_plural = 'Notifications'
+    
+    def __str__(self):
+        return f"{self.get_notification_type_display()}: {self.title}"
+    
+    def mark_as_read(self):
+        """Mark notification as read"""
+        self.is_read = True
+        self.save(update_fields=['is_read', 'updated_at'])
+    
+    def mark_as_sent(self):
+        """Mark notification as sent via email"""
+        self.is_sent = True
+        self.sent_at = timezone.now()
+        self.save(update_fields=['is_sent', 'sent_at', 'updated_at'])
+    
+    @property
+    def is_urgent(self):
+        """Check if notification is urgent based on priority and type"""
+        return (self.priority == 'urgent' or 
+                self.notification_type in ['item_found', 'admin_action'] or
+                (self.item and self.item.is_urgent))
+
+
+class NotificationTemplate(models.Model):
+    """Email templates for different notification types"""
+    TEMPLATE_TYPES = [
+        ('item_found', 'Item Found'),
+        ('item_claimed', 'Item Claimed'),
+        ('item_verified', 'Item Admin Verified'),
+        ('item_dropped_off', 'Item Dropped at Admin'),
+        ('item_ready_claim', 'Item Ready for Claim'),
+        ('admin_action', 'Admin Action Required'),
+        ('system_alert', 'System Alert'),
+        ('reward_earned', 'Reward Earned'),
+        ('contact_received', 'New Contact Message'),
+    ]
+    
+    template_type = models.CharField(max_length=25, choices=TEMPLATE_TYPES, unique=True)
+    subject = models.CharField(max_length=200)
+    html_template = models.TextField(help_text="HTML email template with placeholders")
+    text_template = models.TextField(help_text="Plain text email template with placeholders")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['template_type']
+        verbose_name = 'Notification Template'
+        verbose_name_plural = 'Notification Templates'
+    
+    def __str__(self):
+        return f"{self.get_template_type_display()} Template"
+    
+    def get_subject(self, context=None):
+        """Get subject with context variables replaced"""
+        if not context:
+            return self.subject
+        return self.subject.format(**context)
+    
+    def get_html_content(self, context=None):
+        """Get HTML content with context variables replaced"""
+        if not context:
+            return self.html_template
+        return self.html_template.format(**context)
+    
+    def get_text_content(self, context=None):
+        """Get text content with context variables replaced"""
+        if not context:
+            return self.text_template
+        return self.text_template.format(**context)

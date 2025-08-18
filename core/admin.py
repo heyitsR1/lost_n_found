@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
-from .models import Category, Location, Item, ItemImage, Contact, AdsBanner, RewardCoin, CoinTransaction, Voucher, VoucherRedemption, AdminOperation
+from .models import Category, Location, Item, ItemImage, Contact, AdsBanner, RewardCoin, CoinTransaction, Voucher, VoucherRedemption, AdminOperation, Notification, NotificationTemplate
 
 
 @admin.register(Category)
@@ -126,14 +126,111 @@ class ContactAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     
     def item_title(self, obj):
-        return obj.item.title
+        return obj.item.title if obj.item else 'N/A'
     item_title.short_description = 'Item'
-    item_title.admin_order_field = 'item__title'
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = [
+        'notification_type', 'title', 'recipient_display', 'priority', 
+        'is_read', 'is_sent', 'created_at'
+    ]
+    list_filter = [
+        'notification_type', 'priority', 'is_read', 'is_sent', 
+        'is_admin_notification', 'created_at'
+    ]
+    search_fields = ['title', 'message', 'recipient__email', 'item__title']
+    readonly_fields = ['created_at', 'updated_at', 'sent_at']
+    date_hierarchy = 'created_at'
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('notification_type', 'title', 'message', 'priority')
+        }),
+        ('Recipients', {
+            'fields': ('recipient', 'is_admin_notification')
+        }),
+        ('Related Objects', {
+            'fields': ('item', 'admin_operation'),
+            'classes': ('collapse',)
+        }),
+        ('Status', {
+            'fields': ('is_read', 'is_sent', 'sent_at')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def recipient_display(self, obj):
+        if obj.recipient:
+            return obj.recipient.email
+        elif obj.is_admin_notification:
+            return "All Admins"
+        return "None"
+    recipient_display.short_description = 'Recipient'
+    
+    actions = ['mark_as_read', 'mark_as_unread', 'resend_email']
+    
+    def mark_as_read(self, request, queryset):
+        updated = queryset.update(is_read=True)
+        self.message_user(request, f'{updated} notifications marked as read.')
+    mark_as_read.short_description = "Mark selected notifications as read"
+    
+    def mark_as_unread(self, request, queryset):
+        updated = queryset.update(is_read=False)
+        self.message_user(request, f'{updated} notifications marked as unread.')
+    mark_as_unread.short_description = "Mark selected notifications as unread"
+    
+    def resend_email(self, request, queryset):
+        from .services import NotificationService
+        sent_count = 0
+        for notification in queryset:
+            if NotificationService.send_email_notification(notification):
+                sent_count += 1
+        self.message_user(request, f'{sent_count} emails sent successfully.')
+    resend_email.short_description = "Resend email for selected notifications"
+
+
+@admin.register(NotificationTemplate)
+class NotificationTemplateAdmin(admin.ModelAdmin):
+    list_display = ['template_type', 'subject', 'is_active', 'created_at']
+    list_filter = ['template_type', 'is_active', 'created_at']
+    search_fields = ['template_type', 'subject']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Template Information', {
+            'fields': ('template_type', 'subject', 'is_active')
+        }),
+        ('Email Content', {
+            'fields': ('html_template', 'text_template'),
+            'description': 'Use placeholders like {user}, {item}, {site_url} in your templates.'
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['activate_templates', 'deactivate_templates']
+    
+    def activate_templates(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f'{updated} templates activated.')
+    activate_templates.short_description = "Activate selected templates"
+    
+    def deactivate_templates(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f'{updated} templates deactivated.')
+    deactivate_templates.short_description = "Deactivate selected templates"
 
 
 @admin.register(AdsBanner)
 class AdsBannerAdmin(admin.ModelAdmin):
-    list_display = ['title', 'banner_type', 'sponsor', 'is_active', 'start_date', 'end_date', 'priority', 'is_current_display']
+    list_display = ['title', 'banner_type', 'is_active', 'start_date', 'end_date', 'priority', 'is_current_display']
     list_filter = ['banner_type', 'is_active', 'start_date', 'end_date']
     search_fields = ['title', 'description', 'sponsor']
     readonly_fields = ['created_at']
@@ -141,13 +238,18 @@ class AdsBannerAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Banner Information', {
-            'fields': ('title', 'description', 'banner_type', 'sponsor')
+            'fields': ('title', 'description', 'banner_type')
         }),
         ('Display Settings', {
             'fields': ('image', 'url')
         }),
         ('Visibility Settings', {
             'fields': ('is_active', 'start_date', 'end_date', 'priority')
+        }),
+        ('Internal Information', {
+            'fields': ('sponsor',),
+            'classes': ('collapse',),
+            'description': 'Sponsor information is for internal use only and will not be displayed to users.'
         }),
         ('Timestamps', {
             'fields': ('created_at',),

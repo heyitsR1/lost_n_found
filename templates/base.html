@@ -63,6 +63,14 @@
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="{% url 'core:dashboard' %}">Dashboard</a></li>
                                 <li><a class="dropdown-item" href="{% url 'core:item_create' %}">Post Item</a></li>
+                                <li><a class="dropdown-item position-relative" href="{% url 'core:notifications' %}">
+                                    <i class="fas fa-bell me-2"></i>
+                                    Notifications
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-count-badge" 
+                                          style="display: none;">
+                                        {{ notification_count }}
+                                    </span>
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
                             </ul>
@@ -192,7 +200,23 @@
             
             // Add scroll event listener
             window.addEventListener('scroll', handleScrollAnimations);
+            
+            // Initialize notification count
+            initNotificationCount();
         });
+        
+        // Initialize notification count display
+        function initNotificationCount() {
+            const notificationBadge = document.querySelector('.notification-count-badge');
+            if (notificationBadge) {
+                const count = parseInt(notificationBadge.textContent);
+                if (count > 0) {
+                    notificationBadge.style.display = 'inline';
+                } else {
+                    notificationBadge.style.display = 'none';
+                }
+            }
+        }
     </script>
     
     {% block extra_js %}{% endblock %}

@@ -154,6 +154,39 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Insert listing ads every 3 items -->
+                {% if forloop.counter|divisibleby:3 and ads_banners %}
+                    {% for ad in ads_banners %}
+                        <div class="col-lg-4 col-md-6 fade-in">
+                            <div class="card h-100 border-warning" style="border-width: 2px;">
+                                <div class="card-header bg-warning text-dark text-center py-2">
+                                    <small><i class="fas fa-star me-1"></i>Special Offer</small>
+                                </div>
+                                {% if ad.image %}
+                                    <img src="{{ ad.image.url }}" class="card-img-top" alt="{{ ad.title }}" style="height: 120px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 120px;">
+                                        <i class="fas fa-gift text-muted fa-2x"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="card-body p-3">
+                                    <h6 class="card-title text-dark mb-2">{{ ad.title }}</h6>
+                                    {% if ad.description %}
+                                        <p class="card-text text-muted small mb-2">{{ ad.description|truncatewords:12 }}</p>
+                                    {% endif %}
+                                    
+                                    {% if ad.url %}
+                                        <a href="{{ ad.url }}" class="btn btn-sm btn-warning text-dark" target="_blank">
+                                            <i class="fas fa-external-link-alt me-1"></i>View Offer
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
         </div>
 

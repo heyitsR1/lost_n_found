@@ -24,4 +24,12 @@ urlpatterns = [
     
     # Test authentication
     path('test-auth/', views.test_auth, name='test_auth'),
+    
+    # Debug URLs
+    path('debug-urls/', views.debug_urls, name='debug_urls'),
+    
+    # Notification URLs
+    path('notifications/', views.notifications_view, name='notifications'),
+    path('notifications/<int:notification_id>/mark-read/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
 ] 

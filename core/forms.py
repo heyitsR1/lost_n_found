@@ -147,12 +147,66 @@ class SearchForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     location_type = forms.ChoiceField(
-        choices=[('', 'All Floors')] + Location.LOCATION_TYPES,
+        choices=[('', 'All Floors')] + [
+            ('parking', 'Parking Space'),
+            ('ground_floor', 'Ground Floor'),
+            ('first_floor', 'First Floor'),
+            ('second_floor', 'Second Floor'),
+            ('third_floor', 'Third Floor'),
+            ('fourth_floor', 'Fourth Floor'),
+            ('fifth_floor', 'Fifth Floor'),
+            ('sixth_floor', 'Sixth Floor'),
+            ('seventh_floor', 'Seventh Floor'),
+        ],
         required=False,
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     floor_area = forms.ChoiceField(
-        choices=[('', 'All Areas')] + Location.FLOOR_AREAS,
+        choices=[('', 'All Areas')] + [
+            # Ground Floor
+            ('library', 'Library'),
+            ('it_lab', 'IT Lab'),
+            ('kafe_kodes', 'Kafe Kodes'),
+            ('bathroom', 'Bathroom'),
+            # First Floor (Admin Section)
+            ('admin_section', 'Admin Section'),
+            ('academic_support', 'Academic Support'),
+            ('found_items_drop', 'Found Items Drop-off'),
+            ('items_claim', 'Items Claim Center'),
+            # Class Floors (2nd-5th)
+            ('class_201', 'Class 201'),
+            ('class_202', 'Class 202'),
+            ('class_203', 'Class 203'),
+            ('class_204', 'Class 204'),
+            ('class_301', 'Class 301'),
+            ('class_302', 'Class 302'),
+            ('class_303', 'Class 303'),
+            ('class_304', 'Class 304'),
+            ('class_401', 'Class 401'),
+            ('class_402', 'Class 402'),
+            ('class_403', 'Class 403'),
+            ('class_404', 'Class 404'),
+            ('class_501', 'Class 501'),
+            ('class_502', 'Class 502'),
+            ('class_503', 'Class 503'),
+            ('class_504', 'Class 504'),
+            # Sixth Floor
+            ('program_hall', 'Program Hall'),
+            ('dolab', 'DoLab'),
+            ('cipl', 'CIPL'),
+            ('table_tennis', 'Table Tennis Board'),
+            # Seventh Floor
+            ('canteen', 'Canteen'),
+            # Club Rooms
+            ('tech_club', 'Tech Club'),
+            ('finance_club', 'Finance Club'),
+            ('social_club', 'Social Club'),
+            ('athletics_club', 'Athletics Club'),
+            ('literature_club', 'Literature Club'),
+            ('skillbee_club', 'SkillBee Club'),
+            # Other
+            ('other', 'Other Location'),
+        ],
         required=False,
         widget=forms.Select(attrs={'class': 'form-select'})
     )

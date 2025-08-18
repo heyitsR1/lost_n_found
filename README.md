@@ -1,295 +1,310 @@
-# 🎓 University Lost & Found Management System
+# 🎓 King's College Lost N Found System
 
-A comprehensive, scalable lost and found platform designed specifically for universities. Built with Django and modern web technologies, this system provides an intuitive interface for students and staff to report lost items, post found items, and manage the entire lost and found workflow.
+A comprehensive web application for managing lost and found items within King's College campus, featuring a reward system, advertisement management, and automated notification workflows.
 
-## ✨ Features
+## 🚀 Features
 
-### 🔐 Authentication & User Management
-- **Custom User Model** with student ID validation
-- **Google OAuth Integration** for seamless login
-- **Student ID Verification** system
-- **Department & Graduation Year** tracking
-- **Role-based Access Control**
+### Core Functionality
+- **Lost & Found Management**: Post, search, and manage lost/found items
+- **King's College Integration**: Location system matching actual campus layout
+- **Reward System**: Coin-based rewards for helpful actions
+- **Advertisement System**: Dynamic banner and listing ads
+- **Admin Workflow**: Complete verification and claim process
+- **Email Notifications**: Automated updates for all events
 
-### 📱 Core Functionality
-- **Lost Item Reports** - Students can post detailed descriptions with images
-- **Found Item Posts** - Staff and students can report found items
-- **Multi-image Support** with primary image selection
-- **Category & Location Management** for organized item tracking
-- **Contact System** for item owners and finders
-- **Urgent Item Flagging** for time-sensitive cases
-- **Reward System** for found items
+### Technical Features
+- **Django 5.2.4**: Modern Python web framework
+- **Custom User Model**: Extended student information
+- **Real-time Notifications**: Signal-based event system
+- **Responsive Design**: Bootstrap 5 frontend
+- **Image Management**: Multiple images per item
+- **Advanced Search**: Location, category, and status filtering
 
-### 🎨 Modern UI/UX
-- **Responsive Design** - Works on all devices
-- **Smooth Animations** - Hover effects, tilt animations, scroll-based reveals
-- **Glitch-style Effects** - Modern, engaging visual elements
-- **Bootstrap 5** framework for consistent styling
-- **FontAwesome Icons** for intuitive navigation
-- **Custom CSS Animations** for enhanced user experience
-
-### 🔍 Search & Filtering
-- **Advanced Search** by item type, category, location, and keywords
-- **Filter System** for quick item discovery
-- **Pagination** for large item collections
-- **Status Tracking** (Active, Claimed, Expired, Closed)
-
-### 📊 Dashboard & Analytics
-- **User Dashboard** with personal item history
-- **Admin Panel** for comprehensive system management
-- **Statistics Overview** - Total items, success rates, etc.
-- **Contact Management** for item inquiries
-
-## 🚀 Technology Stack
-
-### Backend
-- **Django 5.2.4** - Robust web framework
-- **SQLite/PostgreSQL** - Database support
-- **Django Allauth** - Authentication system
-- **Django Crispy Forms** - Form rendering
-- **Django Filters** - Advanced filtering
-- **Pillow** - Image processing
-
-### Frontend
-- **HTML5/CSS3** - Semantic markup and styling
-- **Bootstrap 5** - Responsive UI framework
-- **JavaScript** - Interactive features and animations
-- **FontAwesome** - Icon library
-- **Google Fonts** - Typography
-
-### Authentication
-- **Google OAuth 2.0** - Social login integration
-- **Custom User Model** - Extended user fields
-- **Student ID Validation** - University-specific verification
-
-## 📋 Requirements
-
-### Python Dependencies
-```
-Django>=5.2.4
-django-allauth>=0.60.0
-django-crispy-forms>=2.0
-crispy-bootstrap5>=0.7
-django-filter>=23.0
-Pillow>=10.0.0
-requests>=2.31.0
-PyJWT>=2.8.0
-cryptography>=41.0.0
-```
-
-### System Requirements
-- Python 3.8+
-- Virtual environment support
-- Database (SQLite for development, PostgreSQL for production)
-- Web server (Gunicorn, uWSGI, or similar)
-
-## 🛠️ Installation & Setup
-
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd lost_n_found
-```
-
-### 2. Create Virtual Environment
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Environment Configuration
-Create a `.env` file in the project root:
-```env
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=sqlite:///db.sqlite3
-GOOGLE_OAUTH_CLIENT_ID=your-google-client-id
-GOOGLE_OAUTH_CLIENT_SECRET=your-google-client-secret
-```
-
-### 5. Database Setup
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-### 6. Create Superuser
-```bash
-python manage.py createsuperuser
-```
-
-### 7. Populate Initial Data
-```bash
-python manage.py populate_data
-```
-
-### 8. Run Development Server
-```bash
-python manage.py runserver
-```
-
-## 🔧 Configuration
-
-### Google OAuth Setup
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing one
-3. Enable Google+ API
-4. Create OAuth 2.0 credentials
-5. Add authorized redirect URIs: `http://localhost:8000/accounts/google/login/callback/`
-6. Update settings with client ID and secret
-
-### Customization for Different Universities
-The system is designed to be easily customizable:
-
-- **Branding**: Update colors, logos, and university names
-- **Student ID Format**: Modify regex validation in `accounts/models.py`
-- **Categories**: Customize item categories and locations
-- **Email Templates**: Update notification emails
-- **Domain Restrictions**: Configure allowed email domains
-
-## 📱 Usage
-
-### For Students
-1. **Sign Up** with university email and student ID
-2. **Report Lost Items** with descriptions and photos
-3. **Browse Found Items** to claim lost belongings
-4. **Contact Item Owners** through the built-in messaging system
-5. **Track Item Status** in personal dashboard
-
-### For Staff
-1. **Post Found Items** with detailed descriptions
-2. **Manage Item Status** (Active, Claimed, Expired)
-3. **Process Claims** and verify ownership
-4. **Generate Reports** on system usage
-
-### For Administrators
-1. **User Management** - Monitor and manage user accounts
-2. **Category Management** - Add/edit item categories
-3. **Location Management** - Configure campus locations
-4. **System Analytics** - View usage statistics and reports
-
-## 🏗️ Project Structure
+## 🏗️ System Architecture
 
 ```
 lost_n_found/
-├── accounts/                 # User authentication and management
-│   ├── models.py            # Custom user model
-│   ├── forms.py             # Signup and user forms
-│   └── admin.py             # Admin interface configuration
-├── core/                    # Main application logic
-│   ├── models.py            # Item, Category, Location models
-│   ├── views.py             # View functions and logic
-│   ├── forms.py             # Item and search forms
-│   └── urls.py              # URL routing
-├── templates/               # HTML templates
-│   ├── base.html            # Base template with navigation
-│   └── core/                # Page-specific templates
-├── static/                  # CSS, JavaScript, and images
-├── media/                   # User-uploaded images
-├── lost_n_found_project/    # Django project settings
-│   ├── settings.py          # Project configuration
-│   └── urls.py              # Main URL configuration
-└── manage.py                # Django management script
+├── accounts/                 # Custom user management
+├── core/                     # Main application logic
+├── lost_n_found_project/     # Django project settings
+├── media/                    # User uploaded files
+├── static/                   # CSS, JS, images
+├── templates/                # HTML templates
+└── manage.py                 # Django management
 ```
 
-## 🔒 Security Features
+## 🔐 Authentication
 
-- **CSRF Protection** - Built-in Django security
-- **SQL Injection Prevention** - ORM-based queries
-- **XSS Protection** - Template auto-escaping
-- **File Upload Security** - Image validation and sanitization
-- **Authentication Middleware** - Secure user sessions
-- **Permission-based Access** - Role-based system access
+- **Email-based login** with custom user model
+- **Social authentication** (Google OAuth)
+- **Student ID validation** with uniqueness checks
+- **Extended user fields**: department, graduation year, phone
 
-## 📊 Database Schema
+## 🗄️ Database Models
 
-### Core Models
-- **User**: Extended user model with student information
-- **Item**: Lost/found items with metadata
+### Core Entities
+- **Item**: Lost/found items with complete workflow tracking
+- **Location**: King's College campus mapping system
 - **Category**: Item classification system
-- **Location**: Campus location management
-- **ItemImage**: Multiple image support for items
-- **Contact**: Communication between users
+- **User**: Extended student profiles
+- **Notification**: System-wide notification system
+- **AdsBanner**: Advertisement management
+- **RewardCoin**: Virtual currency system
 
-### Key Relationships
-- Users can post multiple items
-- Items belong to categories and locations
-- Items can have multiple images
-- Users can contact item owners
+### Workflow States
+1. **Pending Verification** → **Verified** → **Active**
+2. **Dropped Off** → **Ready for Claim** → **Claimed**
+
+## 📧 Notification System
+
+### Automatic Triggers
+- **Item Found**: Admin + user notifications
+- **Item Verified**: User confirmation
+- **Item Claimed**: User + admin updates
+- **Admin Actions**: Required action notifications
+
+### Email Templates
+- HTML and text versions for all notification types
+- Context-aware content with item details
+- Professional styling and branding
+
+## 🎯 Advertisement System
+
+### Banner Types
+- **Top Banners**: Pure image ads (100px height)
+- **Listing Ads**: Integrated into item browse (every 3 items)
+
+### Management Features
+- **Priority-based ordering**
+- **Date scheduling** (start/end dates)
+- **Type categorization** (sponsor, event, announcement, club)
+- **Admin-only sponsor tracking**
+
+## 🏆 Reward System
+
+### Coin Earning
+- **Found Items**: 25 base coins
+- **Admin Recognition**: Special rewards
+- **Community Help**: Additional coins
+
+### Redemption Options
+- **Canteen Vouchers**: Food and beverages
+- **Cafe Vouchers**: Coffee and snacks
+- **Bookstore Vouchers**: Academic supplies
+- **Event Vouchers**: Special activities
+
+## 🔍 Search & Filtering
+
+### Advanced Search
+- **Multi-field search** across title, description, location
+- **Location filtering** by floor and area
+- **Status filtering** for workflow management
+- **Category filtering** for organization
+- **Pagination** for large result sets
+
+### Location System
+- **Ground Floor**: Library, IT Lab, Kafe Kodes, Tech Club
+- **Second Floor**: Class 201
+- **Third Floor**: Class 301
+- **Fourth Floor**: Class 401
+- **Sixth Floor**: Program Hall, DoLab
+- **Seventh Floor**: Canteen
+- **Parking**: Main Parking Area
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.11+
+- Django 5.2.4
+- Virtual environment
+
+### Installation
+```bash
+# Clone repository
+git clone <repository-url>
+cd lost_n_found
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Create superuser
+python manage.py createsuperuser
+
+# Populate initial data
+python manage.py populate_data
+python manage.py populate_kings_college_locations
+python manage.py repopulate_items_kings_college
+
+# Run development server
+python manage.py runserver
+```
+
+### Management Commands
+```bash
+# Data population
+python manage.py populate_data
+python manage.py populate_kings_college_locations
+python manage.py repopulate_items_kings_college
+python manage.py associate_images
+
+# System maintenance
+python manage.py fix_email_templates
+python manage.py check
+python manage.py collectstatic
+```
+
+## 📱 User Experience
+
+### For Students
+- **Easy item posting** with guided forms
+- **Real-time updates** via email notifications
+- **Reward earning** for helpful actions
+- **Mobile-responsive** design
+
+### For Admins
+- **Complete workflow management**
+- **Item verification system**
+- **Advertisement control**
+- **Analytics and reporting**
+
+## 🔧 Configuration
+
+### Environment Variables
+```bash
+DEBUG=True
+SECRET_KEY=your-secret-key
+EMAIL_HOST=smtp.gmail.com
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+```
+
+### Email Setup
+- **Gmail SMTP** configuration
+- **App password** required for Gmail
+- **Template system** for all notifications
+
+## 🧪 Testing
+
+### System Health
+```bash
+python manage.py check
+```
+
+### Email Testing
+```bash
+python manage.py shell -c "from django.core.mail import send_mail; send_mail('Test', 'Test email', 'from@example.com', ['to@example.com'])"
+```
+
+### Notification Testing
+```bash
+python manage.py shell -c "from core.services import NotificationService; from core.models import Item; item = Item.objects.first(); NotificationService.notify_item_found(item)"
+```
+
+## 📊 Performance
+
+### Optimizations
+- **Database indexing** for fast searches
+- **Select related** queries to reduce database calls
+- **Pagination** for large datasets
+- **Image optimization** and responsive sizing
+
+### Scalability
+- **Modular architecture** for easy extension
+- **Service layer** for business logic
+- **Signal system** for loose coupling
+- **Template inheritance** for reusable components
+
+## 🔒 Security
+
+### Features
+- **CSRF protection** enabled
+- **Input validation** on all forms
+- **File upload security** for images
+- **Admin access control**
+- **Secure session management**
+
+### Best Practices
+- **Environment variables** for sensitive data
+- **HTTPS ready** for production
+- **Regular security updates**
+- **User permission management**
 
 ## 🚀 Deployment
 
-### Production Checklist
-- [ ] Set `DEBUG=False` in settings
-- [ ] Configure production database (PostgreSQL recommended)
-- [ ] Set up static file serving (nginx/Apache)
-- [ ] Configure media file storage
-- [ ] Set up SSL certificates
-- [ ] Configure email backend
-- [ ] Set up monitoring and logging
-- [ ] Configure backup systems
+### Production Requirements
+- **PostgreSQL** database
+- **Cloud storage** for media files
+- **CDN** for static assets
+- **Production SMTP** service
+- **HTTPS** configuration
 
-### Recommended Production Stack
-- **Web Server**: nginx
-- **Application Server**: Gunicorn
-- **Database**: PostgreSQL
-- **File Storage**: AWS S3 or similar
-- **Email**: SendGrid or AWS SES
+### Deployment Checklist
+- [ ] Set `DEBUG=False`
+- [ ] Configure production database
+- [ ] Set up media file storage
+- [ ] Configure email service
+- [ ] Set `ALLOWED_HOSTS`
+- [ ] Run `collectstatic`
+- [ ] Test all functionality
 
-## 🔄 API Endpoints
+## 📚 Documentation
 
-The system provides RESTful endpoints for:
-- User authentication and management
-- Item CRUD operations
-- Search and filtering
-- Image upload and management
-- Contact and messaging
+### User Guides
+- **USER_GUIDE.md**: Complete user documentation
+- **ADMIN_GUIDE.md**: Administrative procedures
+- **AD_BANNER_TESTING_GUIDE.md**: Advertisement system testing
 
-## 📈 Scalability Features
-
-- **Modular Architecture** - Easy to extend and customize
-- **Database Optimization** - Efficient queries and indexing
-- **Caching Support** - Redis integration ready
-- **CDN Ready** - Static file optimization
-- **Multi-tenant Support** - Can serve multiple universities
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+### Technical Documentation
+- **TECHNICAL_DOCUMENTATION.md**: Comprehensive technical overview
+- **API Documentation**: REST API specifications
+- **Database Schema**: Complete model documentation
 
 ## 🆘 Support
 
-For support and questions:
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation
+### Common Issues
+1. **Signup Errors**: Check student ID uniqueness
+2. **Email Issues**: Verify SMTP configuration
+3. **Image Uploads**: Check media directory permissions
+4. **Notification Problems**: Verify email templates
 
-## 🔮 Future Enhancements
+### Troubleshooting
+- **Check system health**: `python manage.py check`
+- **Verify email setup**: Test email sending
+- **Check notifications**: Review notification logs
+- **Database issues**: Run migrations
 
-- **Mobile App** - Native iOS/Android applications
-- **AI Integration** - Image recognition for item matching
-- **Blockchain** - Secure ownership verification
-- **Multi-language Support** - International university support
-- **Advanced Analytics** - Machine learning insights
-- **Integration APIs** - Connect with university systems
+## 🎯 Future Enhancements
+
+### Planned Features
+- **Mobile Application**: React Native/Flutter
+- **Real-time Updates**: WebSocket integration
+- **Advanced Analytics**: User behavior tracking
+- **Multi-language Support**: Internationalization
+- **API Development**: Third-party integrations
+
+### Technical Improvements
+- **Microservices Architecture**: Service separation
+- **Event Sourcing**: Advanced event tracking
+- **Machine Learning**: Smart item matching
+- **Blockchain**: Secure reward system
+
+## 📞 Contact
+
+- **Project Team**: Lost N Found Development Team
+- **Support Email**: support@kings.edu
+- **Documentation**: See technical documentation files
+- **Issues**: Use project issue tracker
 
 ---
 
-**Built with ❤️ for universities worldwide**
+**🎉 The King's College Lost N Found system provides a comprehensive solution for managing lost and found items with modern web technologies, automated workflows, and a user-friendly interface designed specifically for educational environments.**
 
-*This system is designed to be easily deployable and customizable for any educational institution, making it an ideal solution for universities looking to modernize their lost and found operations.*
+**Built with ❤️ for King's College students and staff.**
 
